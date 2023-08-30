@@ -1,0 +1,26 @@
+#bg{
+    background-color: black;
+    display: flex;
+    justify-content: center;
+}
+
+#cameras{
+    display: flex;
+    justify-content: center;
+}
+
+#head-content{
+    display: flex;
+    justify-content: center;
+    background-color: black;
+    
+    border-radius: 20px;
+}
+
+#title{
+    color: #b8bab8;
+}
+
+#body-background{
+    background-color: #252625;
+}
