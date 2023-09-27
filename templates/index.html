@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>CAM PROJECT</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+  </head>
 
-<head>
-
-<title> CAM PROJECT</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-
-
-<body id="body-background">
-    <div id="head-content">  
-        <h1 id="title">
-            CAM OPENCV
-        </h1>
+  <body>
+    <div class="flex flex-col bg-slate-100">
+      <div class="mb-2 ml-5 mr-5 mt-2 flex justify-center rounded-xl bg-slate-300">
+        <h1 class="flex font-medium text-black">CAM OPENCV</h1>
+      </div>
+      <div class="flex flex-wrap flex-row justify-center bg-slate-300">
+        <img class="m-10 rounded-xl shadow-xl opacity-100 border-2 border-black h-2/4 w-2/4" src="{{ url_for('video_feed') }}" />
+        <div class=" flex flex-col justify-center p-3">
+            <button>add cam</button>
+            <button>disconnect</button>
+        </div>
+      </div>
     </div>
-    
-<div id="cameras">
-    <img id="bg" src="{{ url_for('video_feed') }}">
-</div>
-    
-</body>
-
-
+  </body>
+  
 </html>
-
