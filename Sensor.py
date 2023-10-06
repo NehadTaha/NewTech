@@ -14,10 +14,10 @@ GPIO.setup(pir, GPIO.IN)
 image_list = []  # To store captured image filenames
 
 # Twilio credentials
-account_sid = 'ACc227270a36945835122743f400429062'
-auth_token = '03a729d8919882f0eebe5d6febde717b'
-twilio_phone_number = '+12565884577'
-your_phone_number = '+18193498430'
+account_sid = 'My Account SID'
+auth_token = 'My Auth Token'
+twilio_phone_number = 'my_twilio_phone_number'
+your_phone_number = 'my_phone_number'
 
 # Flag to track if notification has been sent
 notification_sent = False
