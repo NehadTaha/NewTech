@@ -12,3 +12,6 @@ class VideoCamera(object):
         
         ret, jpeg = cv2.imencode('.jpg',frame)
         return jpeg.tobytes()
+    
+    def rec(self,breaker):
+        ...

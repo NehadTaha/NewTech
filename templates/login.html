@@ -12,7 +12,7 @@
   <body class="flex min-h-screen items-center justify-center bg-gray-100">
     <div class="w-full max-w-md space-y-8">
       <h2 class="text-center text-2xl font-semibold">Sign in</h2>
-      <form class="mt-8 space-y-6">
+      <form class="mt-8 space-y-6" method="POST">
         <div class="-space-y-px rounded-md shadow-sm">
           <div class="mb-4">
             <label
@@ -23,6 +23,7 @@
             <input
               type="text"
               id="username"
+              name="username"
               class="mt-1 block w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200"
               placeholder="Enter your username"
             />
@@ -36,6 +37,7 @@
             <input
               type="password"
               id="password"
+              name="password"
               class="mt-1 block w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200"
               placeholder="Enter your password"
             />
