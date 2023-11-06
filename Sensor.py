@@ -1,5 +1,6 @@
 from twilio.rest import Client
 import RPi.GPIO as GPIO
+import requests
 import time
 import subprocess
 
@@ -18,6 +19,9 @@ account_sid = 'My Account SID'
 auth_token = 'My Auth Token'
 twilio_phone_number = 'my_twilio_phone_number'
 your_phone_number = 'my_phone_number'
+server_url='http://192.168.12.21:5000'
+motion_detected=False
+
 
 # Flag to track if notification has been sent
 notification_sent = False
@@ -44,21 +48,30 @@ def capture_image():
 try:
     while True:
         if GPIO.input(pir):
-            GPIO.output(led, GPIO.LOW)
             print("Motion Detected")
             
             # Capture an image when motion is detected
-            capture_image()
+           # capture_image()
+            
              # Send an SMS notification if it hasn't been sent yet
-            if not notification_sent:
-                send_sms("Motion detected on Raspberry Pi!")
-                notification_sent = True
+           # if not notification_sent:
+              #  send_sms("Motion detected on Raspberry Pi!")
+               # notification_sent = True
+
+            
+                
+            response = requests.post(f"{server_url}/motion_detected", json={"motion_detected": GPIO.input(pir)})
+            print("request sent")
+            if response.status_code == 200:
+                print(f"Motion detected status sent to server: {motion_detected}")
+            else:
+                print(f"Failed to send motion detected status to server")
             
             while GPIO.input(pir):
                 time.sleep(0)
         else:
-            GPIO.output(led, GPIO.HIGH)
             print("Motion stopped")
+
 
 except KeyboardInterrupt:
     pass
