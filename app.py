@@ -9,7 +9,9 @@ app = Flask(__name__)
 
 token = None
 
-@app.route(ulrs.get('Home'))
+cam = VideoCamera()
+
+@app.route(urls.get('Home'))
 def index():
     return render_template('index.html')
 
@@ -19,19 +21,26 @@ def gen(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame +
                b'\r\n\r\n')
+        if camera.record_flag and camera.out is not None:
+            camera.out.write(frame)
 
-@app.route(ulrs.get('Stream'))
+@app.route(urls.get('Stream'))
 def video_feed():
-    return Response(gen(VideoCamera()),
+    global cam
+    return Response(gen(cam),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route(ulrs.get('Login'), methods=['POST','GET'])
+@app.route(urls.get('Login'), methods=['POST','GET'])
 def login():
     if request.method =='POST':
         data = request.form
     
     return render_template('login.html')
 
+@app.route(ulrs.get('Rec'))
+def record():
+    global cam
+    cam.start_recording()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='5000', debug=True)
