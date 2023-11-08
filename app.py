@@ -3,6 +3,7 @@ from flask_httpauth import HTTPBasicAuth
 import cv2
 from cam2 import VideoCamera
 from flask import flash
+#from end_point import ulrs
 
 user="admin"
 user_password="1234"
@@ -13,6 +14,8 @@ app = Flask(__name__)
 motion_detected = False
 app.secret_key = 'your_secret_key_here'
 
+
+token = None
 
 @app.route('/')
 def index():
