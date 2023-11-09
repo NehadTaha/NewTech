@@ -8,16 +8,18 @@
     />
   </head>
 
-  <body>
+  <body class="bg-slate-300 rounded-xl">
     <div class="flex flex-col bg-slate-100">
       <div class="mb-2 ml-5 mr-5 mt-2 flex justify-center rounded-xl bg-slate-300">
-        <h1 class="flex font-medium text-black">CAM OPENCV</h1>
+        <h1 class="flex font-medium text-black">Main Camera</h1>
       </div>
-      <div class="flex flex-wrap flex-row justify-center bg-slate-300">
-        <img class="m-10 rounded-xl shadow-xl opacity-100 border-2 border-black h-2/4 w-2/4" src="{{ url_for('video_feed') }}" />
-        <div class=" flex flex-col justify-center p-3">
-
-        </div>
+      <div class="flex flex-wrap flex-row justify-center bg-slate-300 rounded-xl">
+        <img class="m-10 rounded-xl shadow-xl opacity-100 border-2 border-black h-2/4 w-2/4 mx-12" src="{{ url_for('video_feed') }}" />
+        <div class="flex justify-center items-center h-min"><div class="ghost"></div></div>
+      
+      </div>
+      <div class="flex justify-center bg-slate-300">
+        <button class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Go to Recordings</button>
       </div>
     </div>
   </body>

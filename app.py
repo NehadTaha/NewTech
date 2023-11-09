@@ -1,23 +1,23 @@
 from flask import Flask, render_template, Response, redirect, url_for,request, request
-from flask_httpauth import HTTPBasicAuth
+#from flask_httpauth import HTTPBasicAuth
 import cv2
 from cam2 import VideoCamera
 from flask import flash
 from end_point import urls
 
+#user credential
 user="admin"
 user_password="1234"
-camera = VideoCamera()
 
-# this needs auth FLask httpauth
 app = Flask(__name__)
+
 motion_detected = False
+
 app.secret_key = 'your_secret_key_here'
 
+token = None #this does nothing for now
 
-token = None
-
-cam = VideoCamera()
+cam = VideoCamera() #camera instance
 
 @app.route(urls.get('Home'))
 def index():
@@ -35,24 +35,24 @@ def gen(camera):
 @app.route(urls.get('Stream'))
 def video_feed():
     global cam
-    if motion_detected:
-        return Response(gen(VideoCamera()),
-                        mimetype='multipart/x-mixed-replace; boundary=frame')
-    else:
-        return 'Motion not detected'
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/motion_detected', methods=['POST'])
 def set_motion_detected():
     global motion_detected
+    global cam
     data = request.get_json()
     motion_detected = data.get("motion_detected")
     print("motion", motion_detected)
-    if motion_detected:
-        cam = VideoCamera()
+    #if motion_detected:
+        #cam = VideoCamera()
+    
+    cam.start_recording()
     return 'OK'
 
       
-@app.route(urls.get('Login', methods=['GET', 'POST']), methods=['POST','GET'])
+@app.route(urls.get('Login'), methods=['POST','GET'])
 def login():
     
     if request.method == 'POST':
@@ -71,6 +71,7 @@ def login():
 def record():
     global cam
     cam.start_recording()
+    return "hello world"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='5000', debug=True)
