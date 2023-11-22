@@ -9,7 +9,6 @@ from cam2 import VideoCamera
 from end_point import urls
 
 
-# this needs auth FLask httpauth
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -66,6 +65,7 @@ class LoginForm(FlaskForm):
 
 
 motion_detected = False
+
 app.secret_key = 'your_secret_key_here'
 
 cam = VideoCamera()
@@ -75,26 +75,17 @@ def gen(camera):
     while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame +
+               b'Content-Type: image/jpeg\r\n\r\n' + frame[0] +
                b'\r\n\r\n')
         if camera.record_flag and camera.out is not None:
             camera.out.write(frame)
-
-
-@app.route(urls.get('Home'))
-def index():
-    return render_template('home.html', form=LoginForm())
-
 
 @app.route(urls.get('Stream'))
 @login_required
 def video_feed():
     global cam
-    if motion_detected:
-        return Response(gen(VideoCamera()),
-                        mimetype='multipart/x-mixed-replace; boundary=frame')
-    else:
-        return 'Motion not detected'
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
     return render_template('login.html', form=form)
 
     
@@ -103,11 +94,14 @@ def video_feed():
 @app.route('/motion_detected', methods=['POST'])
 def set_motion_detected():
     global motion_detected
+    global cam
     data = request.get_json()
     motion_detected = data.get("motion_detected")
     print("motion", motion_detected)
-    if motion_detected:
-        cam = VideoCamera()
+    #if motion_detected:
+        #cam = VideoCamera()
+    
+    cam.start_recording()
     return 'OK'
 
 
