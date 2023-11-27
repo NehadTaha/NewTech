@@ -1,4 +1,0 @@
-- [ ] password hashed
-- [ ] the login page is the first page you see
-- [ ] you need to be logged in to see other pages
-- [ ] you need to be able to log out

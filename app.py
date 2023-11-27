@@ -22,7 +22,10 @@ cam = VideoCamera() #camera instance
 
 @app.route(urls.get('Home')) # type: ignore
 def index():
-    return render_template('index.html')
+    if 'user' in session:
+        return render_template('index.html')
+    else:
+        return render_template('login.html')
 
 def gen(camera):
     while True:
@@ -82,14 +85,14 @@ def record():
         print('recording!')
     return str(cam.out)
 
-@app.route('/rec_portal')
+@app.route(urls.get('Portal'))
 def portal():
     if 'user' in session:
         return render_template('viewRecording.html')
     else:
         return render_template('login.html')
 
-@app.route('/rec_info')
+@app.route(urls.get('Info'))
 def get_info():
 
     if 'user' in session:
@@ -107,6 +110,11 @@ def get_info():
         return json_string
     else:
         return render_template('login.html')
+    
+
+@app.route('/logout')
+def logout():
+    session.clear()
 
 
 if __name__ == "__main__":

@@ -36,11 +36,12 @@ class VideoCamera(object):
             self.stop_recording()
     
     def start_recording(self):
-        name = str(datetime.datetime.now().strftime('%A-%b-%d-%Y-%H-%M-%S')) +'.mp4'
-        print(name)
-        self.out = cv2.VideoWriter('static/video/' + name , self.fourcc, 20.0, (640, 480))  
-        self.record_flag = True
         try:
+            name = str(datetime.datetime.now().strftime('%A-%b-%d-%Y-%H-%M-%S')) +'.mp4'
+            print(name)
+            self.out = cv2.VideoWriter('static/video/' + name , self.fourcc, 20.0, (640, 480))  
+            self.record_flag = True
+            
             t1 = threading.Thread(target=self.wait_time)
             t1.start()
         except Exception as error:

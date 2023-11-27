@@ -19,9 +19,38 @@
       
       </div>
       <div class="flex justify-center bg-slate-300">
-        <button class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Go to Recordings</button>
+        <button onclick="" class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Logout</button>
+        
+        <button onclick="window.location.href='http://192.168.2.20:5000/rec_portal'" class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Go to Recordings</button>
       </div>
     </div>
   </body>
-  
+
+  <script>
+    function Logout(){
+
+      fetch('http://192.168.2.20:5000/logout', {
+      method: 'GET', // or 'POST', 'PUT', etc. depending on your server route
+      headers: {
+        'Content-Type': 'application/json', // adjust the content type as needed
+        // You might need to include additional headers such as authentication tokens
+      },
+      // You can include a request body for POST or other HTTP methods
+      // body: JSON.stringify({ key: 'value' }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      // No need to parse response data since we're not expecting any
+      console.log('Request successful');
+    })
+    .catch(error => {
+      // Handle errors
+      console.error('Error:', error);
+    });
+
+      window.location.href='http://192.168.2.20:5000/login'
+    }
+  </script>
 </html>
