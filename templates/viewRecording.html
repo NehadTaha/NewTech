@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Dynamic Element Update</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+</head>
+<body class="flex h-full flex-col bg-black p-2" >
+  <script>
+
+    const req = 'http://192.168.2.20:5000/rec_info'
+
+    fetch(req)
+      .then(response => response.json())
+      .then(jsonData => {
+
+        console.log(jsonData)
+
+        //take in the list of video file names
+          var container = document.getElementById('Band');
+          
+          jsonData.map(item =>{
+
+
+             //create elements
+
+            div = document.createElement('div')
+            svg = document.createElement('svg')
+            h2 = document.createElement('h2')
+            img = document.createElement('img')
+            button = document.createElement('button')
+
+
+            //css classes for all elements
+            div.classList.add("flex", "flex-col","rounded-lg", "border", "border-black" ,"bg-white", "p-6", "shadow-lg", "shadow-gray-950")
+            svg.classList.add("mb-3","h-7","w-7","text-gray-500","dark:text-gray-400")
+            h2.classList.add("flex","justify-center","font-mono","font-bold","text-gray-500")
+            img.classList.add("rounded-xl")
+            button.classList.add("flex", "justify-center", "text-center", "bg-gray-500", "hover:bg-gray-700", "text-white", "font-bold", 
+            "py-2", "px-4", "rounded")
+
+            h2.textContent = item["vid_name"].toString()
+
+            button.id = item["vid_name"].toString()
+            console.log(button.id)
+            button.textContent = "View"
+
+            //svg
+            svg.setAttribute("aria-hidden", "true");
+            svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            svg.setAttribute("fill", "currentColor");
+            svg.setAttribute("viewBox", "0 0 20 20");
+
+            //svg path
+            var pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathElement.setAttribute("d", "M18 5h-.7c.229-.467.349-.98.351-1.5a3.5 3.5 0 0 0-3.5-3.5c-1.717 0-3.215 " +
+                "1.2-4.331 2.481C8.4.842 6.949 0 5.5 0A3.5 3.5 0 0 0 2 3.5c.003.52.123 1.033.351 " +
+                "1.5H2a2 2 0 0 0-2 2v3a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a2 2 0 0 0-2-2ZM8.058 5H5.5a1.5 1.5 " +
+                "0 0 1 0-3c.9 0 2 .754 3.092 2.122-.219.337-.392.635-.534.878Zm6.1 0h-3.742c.933-1.368 " +
+                "2.371-3 3.739-3a1.5 1.5 0 0 1 0 3h.003ZM11 13H9v7h2v-7Zm-4 0H2v5a2 2 0 0 0 2 2h3v-7Zm6 0v7h3 " +
+                "a2 2 0 0 0 2-2v-5h-5Z");
+
+            //path to svg
+            svg.appendChild(pathElement)
+            //img attribute
+            img.setAttribute("src", "#");
+            img.setAttribute("alt", "#");
+            img.setAttribute("width", "320");
+            img.setAttribute("height", "240");
+            //button onclick
+            button.addEventListener("click", function() {
+              // Your code to be executed when the button is clicked
+              addElement(item["vid_name"].toString())
+            });
+            
+            div.appendChild(svg)
+            div.appendChild(h2)
+            div.appendChild(img)
+            div.appendChild(button)
+
+            container.appendChild(div)
+
+
+            //console.log(item["vid_name"].toString())
+            
+          })
+           
+           
+          }
+          
+      )
+      .catch(error => console.error('Error fetching JSON:', error))
+    
+  </script>
+  <style>
+    
+    h1 {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-family: 'monospace';
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 0.5rem;
+      margin: 0;
+      z-index: 1;
+      background-color: black;
+      transition: top 0.3s ease-in-out; /* Add smooth transition effect */
+    }
+
+      .hide {
+        top: -70px; /* Adjust the height to hide the h1 */
+      }
+    
+  </style>
+
+<h1 id="pageTitle">Video Recording</h1>
+
+<script>
+  var pageTitle = document.getElementById('pageTitle');
+  window.addEventListener('scroll', function () {
+    var st = window.scrollY;
+
+    if (st === 0) {
+      // At the top of the page
+      pageTitle.classList.remove('hide');
+    } else {
+      // Not at the top of the page
+      pageTitle.classList.add('hide');
+    }
+  });
+</script>
+
+
+<div id="container" class="flex h-full flex-col bg-black p-2 mt-10">
+
+
+      <div id="Band" class="flex justify-center rounded-xl bg-red-500 p-2 align-middle w-fit">
+
+       
+       
+
+      </div>
+
+    </div>
+
+
+
+<script>
+    function addElement(id) {
+        //find the parent container
+        var container = document.getElementById('container');
+
+        //prevents duplicate components
+        if(document.getElementById('video-player')){
+            container.removeChild(document.getElementById('video-player'))
+        }
+        //create all the relevent tags
+        var newDiv = document.createElement('div')
+        var newChild = document.createElement('video');
+        var newChildOfChild = document.createElement('source')
+
+        //configure id and css for the child Div
+        newDiv.id = 'video-player'
+        newDiv.classList.add("flex", "justify-center", "p-5","items-end","fixed","bottom-0" )
+
+        //configure video tag. unable controls and set css class
+        newChild.controls = true
+        newChild.classList.add("border", "rounded-xl","w-6/12", "h-6/12")
+        newChild.preload ="none"
+        //set the source
+        newChildOfChild.type = "video/mp4"
+        newChildOfChild.src = "{{ url_for('static', filename='video/') }}" + id
+        //put the source inside the video tag
+        newChild.appendChild(newChildOfChild)
+        //the the video tag in the div
+        newDiv.appendChild(newChild)
+        //put the div in the parent div (id:container)
+        container.appendChild(newDiv);
+    }
+
+</script>
+
+</body>
+</html>

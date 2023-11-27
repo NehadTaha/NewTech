@@ -1,54 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background-image: url('https://img.freepik.com/premium-photo/modern-smart-home-systems-smart-building-smart-home-is-isolated-background-generate-aiai-generated_868783-10021.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-  </style>
-</head>
-<body>
-  <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100">
-    <div class="w-100 mt-3">
-      <div class="container p-4 rounded bg-light">
-        <h2 class="text-center mb-4 text-primary">Sign in</h2>
-        
-        <form method="post">
-          <div class="mb-3">
-            {{ form.hidden_tag() }}
-            <label for="username" class="form-label text-primary">Username</label>
-            {{ form.username(class="form-control") }}
-          </div>
-          <div class="mb-3">
-            <label for="password" class="form-label text-primary">Password</label>
-            {{ form.password(class="form-control") }}
-          </div>
-          <div class="mb-3">
-            {{ form.submit(class="btn btn-primary") }}
-          </div>
-        </form>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="alert alert-danger text-center mt-3">
-              <ul class="list-unstyled">
-                {% for message in messages %}
-                  <li>{{ message }}</li>
-                {% endfor %}
-              </ul>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+  </head>
+  <body class="flex min-h-screen items-center justify-center bg-gray-100">
+    <div class="w-full max-w-md space-y-8">
+        <h2 class="text-center text-2xl font-semibold">Sign in</h2>
+        <form class="mt-8 space-y-6" method="post">
+            <div class="-space-y-px rounded-md shadow-sm">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" name="username" id="username" class="mt-1 block w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter your username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" id="password" class="mt-1 block w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring focus:ring-blue-200" placeholder="Enter your password" required>
+                </div>
             </div>
-          {% endif %}
-        {% endwith %}
-        <p class="text-center mt-4 text-black">Don't have an account? <a href="/register" class="text-primary">Register here</a>.</p>
-      </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="group relative flex w-full justify-center rounded-md border-transparent bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" style="background: linear-gradient(to right, #e9e9e9, #d4d4d4, #9a9a9a, #707070);">
+                    Sign In
+                </button>
+            </div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="text-red-500 text-center mt-2">
+                <ul>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </form>
     </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

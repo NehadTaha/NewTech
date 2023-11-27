@@ -1,75 +1,28 @@
-from flask import Flask, render_template, Response, redirect, url_for, request,flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length, ValidationError
-from flask_bcrypt import Bcrypt
+from flask import Flask, flash, render_template, Response, redirect, url_for, request, jsonify, session
 from cam2 import VideoCamera
 from end_point import urls
+import os
+from flask_cors import CORS
+from passlib.hash import sha256_crypt
+import secrets
 
 
-app = Flask(__name__)
+#user credential
+user="admin"
+user_password="$5$rounds=535000$KPqyrKLnCS9IRv18$qr9KrAIBIkYIUQ8uJ1B8qWR5sb8SU3uT9WuHNfklO6B"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'thisisasecretkey'
-db = SQLAlchemy(app)
+app = Flask(__name__, static_folder ='static')
+app.config['SEND_FILE_MAX_RANGE'] = 0
+CORS(app)
 
-bcrypt = Bcrypt(app)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-class User(db.Model, UserMixin):
-    __tablename__ = 'user'
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
-
-
-class RegisterForm(FlaskForm):
-    email = StringField(validators=[
-                           InputRequired(), Length(min=4, max=60)], render_kw={"placeholder": "Email"})
-    username = StringField(validators=[
-                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
-
-    password = PasswordField(validators=[
-                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-
-    submit = SubmitField('Register')
-
-    def validate_username(self, username):
-        existing_user_username = User.query.filter_by(
-            username=username.data).first()
-        if existing_user_username:
-            raise ValidationError(
-                'That username already exists. Please choose a different one.')
-
-
-class LoginForm(FlaskForm):
-    username = StringField(validators=[
-                           InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
-
-    password = PasswordField(validators=[
-                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
-
-    submit = SubmitField('Login')
-
-
+app.secret_key = secrets.token_hex(16)
 motion_detected = False
 
-app.secret_key = 'your_secret_key_here'
+cam = VideoCamera() #camera instance
 
-cam = VideoCamera()
-
+@app.route(urls.get('Home')) # type: ignore
+def index():
+    return render_template('index.html')
 
 def gen(camera):
     while True:
@@ -78,18 +31,15 @@ def gen(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame[0] +
                b'\r\n\r\n')
         if camera.record_flag and camera.out is not None:
-            camera.out.write(frame)
+            camera.out.write(frame[1])
 
-@app.route(urls.get('Stream'))
-@login_required
+@app.route(urls.get('Stream')) # type: ignore
 def video_feed():
-    global cam
-    return Response(gen(VideoCamera()),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-    return render_template('login.html', form=form)
-
-    
-
+        global cam
+        if 'user' in session:
+            cam.logged = True
+        return Response(gen(cam),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/motion_detected', methods=['POST'])
 def set_motion_detected():
@@ -102,71 +52,62 @@ def set_motion_detected():
         #cam = VideoCamera()
     
     cam.start_recording()
-    return 'OK'
+    return motion_detected
 
-
-@app.route(urls.get('Login'), methods=['GET', 'POST'])
+      
+@app.route(urls.get('Login'), methods=['POST','GET']) # type: ignore
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user)
-            return redirect('index.html')
-        else:
-            flash('Invalid credentials', 'error')  # Flash message for invalid credentials
-    return render_template('login.html', form=form)
-
-
-
-@app.route('/logout', methods=['GET', 'POST'])
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-
     if request.method == 'POST':
-        
-        username = request.form.get("username")
-        password = request.form.get("password")
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-      
-        username_exists = User.query.filter_by(username=username).first()
+        print(password)
 
-      
-        if username_exists:
-            print('Username is already in use.')
-            flash('Username is already in use.', 'error')
-           
-        elif len(username) < 4:
-            flash('Username is too short.', 'error')
-        elif len(password) < 8:
-            flash('Password is too short.', 'error')
+        if username == user and sha256_crypt.verify(str(password),user_password):
+            
+            session['user'] = 'connected'
+
+            return redirect(url_for('index'))
         else:
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            new_user = User(username=username, password=hashed_password)
-            db.session.add(new_user)
-            db.session.commit()
-            # flash('Registration successful!', 'success')
-            return redirect(url_for('login'))
+            flash("Wrong Credential")
+            return redirect(url_for('login'))  # Redirect back to the login page
 
-    return render_template('register.html', form=form)
+    return render_template('login.html')
 
-
-@app.route(urls.get('Rec'))
-@login_required
+@app.route(urls.get("Rec")) # type: ignore
 def record():
     global cam
-    cam.start_recording()
-    return redirect(url_for('login'))
- 
+    if not cam.record_flag:
+        cam.start_recording()
+        print('recording!')
+    return str(cam.out)
 
+@app.route('/rec_portal')
+def portal():
+    if 'user' in session:
+        return render_template('viewRecording.html')
+    else:
+        return render_template('login.html')
+
+@app.route('/rec_info')
+def get_info():
+
+    if 'user' in session:
+
+        dir_path = r'./static/video/'
+        res = []
+        pic = []
+
+        for path in os.listdir(dir_path):
+            if os.path.isfile(os.path.join(dir_path,path)):
+                
+                res.append({"vid_name":path})
+                
+        json_string = jsonify(res)
+        return json_string
+    else:
+        return render_template('login.html')
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='5000', debug=True)
+    app.run(host='0.0.0.0', port='5000', debug=True) # type: ignore
