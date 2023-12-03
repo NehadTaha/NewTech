@@ -5,20 +5,34 @@ import os
 from flask_cors import CORS
 from passlib.hash import sha256_crypt
 import secrets
+import cv2
+import time
 
 
 #user credential
 user="admin"
 user_password="$5$rounds=535000$KPqyrKLnCS9IRv18$qr9KrAIBIkYIUQ8uJ1B8qWR5sb8SU3uT9WuHNfklO6B"
 
+
+
+
+
+
 app = Flask(__name__, static_folder ='static')
 app.config['SEND_FILE_MAX_RANGE'] = 0
 CORS(app)
 
+cam = None
+time.sleep(1)
+if cam is None:
+    print('before cam')
+    cam = VideoCamera() #camera instance
+    print(cam)
+else:
+    print("running twice")
+
 app.secret_key = secrets.token_hex(16)
 motion_detected = False
-
-cam = VideoCamera() #camera instance
 
 @app.route(urls.get('Home')) # type: ignore
 def index():
@@ -34,7 +48,13 @@ def gen(camera):
                b'Content-Type: image/jpeg\r\n\r\n' + frame[0] +
                b'\r\n\r\n')
         if camera.record_flag and camera.out is not None:
-            camera.out.write(frame[1])
+            try:
+                frame = cv2.resize(frame[1],(640,480))
+                camera.out.write(frame)
+            except Exception as error:
+                print(str(error) + ' in gen')
+                self.out.release() # type: ignore
+                
 
 @app.route(urls.get('Stream')) # type: ignore
 def video_feed():
@@ -51,11 +71,9 @@ def set_motion_detected():
     data = request.get_json()
     motion_detected = data.get("motion_detected")
     print("motion", motion_detected)
-    #if motion_detected:
-        #cam = VideoCamera()
-    
-    cam.start_recording()
-    return motion_detected
+    if not cam.record_flag:
+        cam.start_recording()
+    return 'Motion detected sent to server'
 
       
 @app.route(urls.get('Login'), methods=['POST','GET']) # type: ignore
@@ -118,4 +136,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='5000', debug=True) # type: ignore
+    app.run(host='0.0.0.0', port='5000', debug=False) # type: ignore

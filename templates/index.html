@@ -21,7 +21,7 @@
       <div class="flex justify-center bg-slate-300">
         <button onclick="" class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Logout</button>
         
-        <button onclick="window.location.href='http://192.168.2.20:5000/rec_portal'" class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Go to Recordings</button>
+        <button onclick="window.location.href='http://192.168.2.23:5000/rec_portal'" class="rounded border border-gray-400 bg-white px-4 py-2 font-semibold text-gray-800 shadow hover:bg-gray-100">Go to Recordings</button>
       </div>
     </div>
   </body>
@@ -29,7 +29,7 @@
   <script>
     function Logout(){
 
-      fetch('http://192.168.2.20:5000/logout', {
+      fetch('http://192.168.2.23:5000/logout', {
       method: 'GET', // or 'POST', 'PUT', etc. depending on your server route
       headers: {
         'Content-Type': 'application/json', // adjust the content type as needed
@@ -50,7 +50,7 @@
       console.error('Error:', error);
     });
 
-      window.location.href='http://192.168.2.20:5000/login'
+      window.location.href='http://192.168.2.23:5000/login'
     }
   </script>
 </html>

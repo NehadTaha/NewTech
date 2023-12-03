@@ -19,7 +19,7 @@ account_sid = 'My Account SID'
 auth_token = 'My Auth Token'
 twilio_phone_number = 'my_twilio_phone_number'
 your_phone_number = 'my_phone_number'
-server_url='http://192.168.12.21:5000'
+server_url='http://192.168.2.23:5000'
 motion_detected=False
 
 
@@ -68,7 +68,7 @@ try:
                 print(f"Failed to send motion detected status to server")
             
             while GPIO.input(pir):
-                time.sleep(0)
+                time.sleep(20)
         else:
             print("Motion stopped")
 
